@@ -139,6 +139,7 @@ architecture struct of amiga_ulx3s is
   alias mmc_miso: std_logic is sd_dat0_do;
   -- END FLEA OHM ALIASING
 
+  signal clocks_a, clocks_b : std_logic_vector(3 downto 0);
   signal clk  : std_logic := '0';	
   signal clk7m  : std_logic := '0';
   signal clk28m  : std_logic := '0';   
@@ -364,45 +365,41 @@ begin
   ps2m_clk_in<=PS2_clk2;
   PS2_clk2 <= '0' when ps2m_clk_out='0' else 'Z';	 
 
-  clk0 : entity work.clk_minimig_vhdl
+  clk0 : entity work.ecp5pll
+  generic map
+  (
+        in_Hz => natural( 25.0e6    ),
+      out0_Hz => natural(140.625e6  ),                  out0_tol_hz => 0,
+      out1_Hz => natural(112.5e6    ), out1_deg =>   0, out1_tol_hz => 0,
+      out2_Hz => natural( 28.125e6  ), out2_deg =>   0, out2_tol_hz => 0,
+      out3_Hz => natural(  7.03125e6), out3_deg =>   0, out3_tol_hz => 0
+  )
   port map
   (
-    clkin   => sys_clock,
-    clk_140 => clk_dvi,
-    clk_112 => clk,
-    clk_28  => clk28m,
-    clk_7   => clk7m,
+    clk_i   => sys_clock,
+    clk_o   => clocks_a,
     locked  => pll_locked
   );
+  clk_dvi <= clocks_a(0);
+  clk     <= clocks_a(1);
+  clk28m  <= clocks_a(2);
+  clk7m   <= clocks_a(3);
 
-  G_clk_usb_low: if C_usb_speed = '0' generate
-  clk1 : entity work.clk_ramusb_vhdl
+  clk1 : entity work.ecp5pll
+  generic map
+  (
+        in_Hz => natural( 25.0e6),
+      out0_Hz => natural(112.5e6),                  out0_tol_hz => 0,
+      out1_Hz => natural(112.5e6), out1_deg => 120, out1_tol_hz => 0,
+      out2_Hz => natural(112.5e6),                  out2_tol_hz => 0,
+      out3_Hz => natural(112.5e6),                  out3_tol_hz => 0
+  )
   port map
   (
-    clkin          => sys_clock,
-    clk_112        => open,
-    clk_112_120deg => sdram_clk,
-    clk_6          => clk_usb    -- 6.05 MHz (ideal would be 6 MHz)
+    clk_i   => sys_clock,
+    clk_o   => clocks_b
   );
-  end generate;
-
-  G_clk_usb_high: if C_usb_speed = '1' generate
-    clk1 : entity work.clk_ramusb_vhdl
-    port map
-    (
-      clkin          => sys_clock,
-      clk_112        => open,
-      clk_112_120deg =>	sdram_clk,
-      clk_6	     => open       -- 6.05 MHz
-    );
-    clk2 : entity work.clk_usb_vhdl
-    port map
-    (
-      clkin  => sys_clock,
-      clk_48 => clk_usb,
-      clk_6  => open
-    );
-  end generate;
+  sdram_clk <= clocks_b(1);
 
   reset_combo1 <= sys_reset and pll_locked;
 

@@ -1,7 +1,5 @@
 VHDL_FILES = $(TOP_MODULE_FILE) \
-../../../../rtl_emard/lattice/ulx3s/clocks/$(CLK0_NAME)_vhdl.vhd \
-../../../../rtl_emard/lattice/ulx3s/clocks/$(CLK1_NAME)_vhdl.vhd \
-../../../../rtl_emard/lattice/ulx3s/clocks/$(CLK2_NAME)_vhdl.vhd \
+../../../../rtl_emard/lattice/ulx3s/clocks/ecp5pll.vhd \
 ../../../../Minimig_ECS/impl1/source/Fampiga.vhd \
 ../../../../source_emard/cfide.vhd \
 ../../../../Minimig_ECS/impl1/source/Debounce.vhd \
@@ -44,9 +42,6 @@ VHDL_FILES = $(TOP_MODULE_FILE) \
 # ../../../../Minimig_ECS/RTL/sdram_cache.vhd \
 
 VERILOG_FILES = \
-../../../../rtl_emard/lattice/ulx3s/clocks/$(CLK0_NAME).v \
-../../../../rtl_emard/lattice/ulx3s/clocks/$(CLK1_NAME).v \
-../../../../rtl_emard/lattice/ulx3s/clocks/$(CLK2_NAME).v \
 ../../../../Minimig_ECS/impl1/source/Agnus.v \
 ../../../../Minimig_ECS/impl1/source/Amber.v \
 ../../../../Minimig_ECS/impl1/source/Audio.v \
