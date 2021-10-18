@@ -361,9 +361,9 @@ begin
   (
         in_Hz => natural( 25.0e6),
       out0_Hz => natural(112.5e6),                  out0_tol_hz => 0,
-      out1_Hz => natural(112.5e6), out1_deg => 120, out1_tol_hz => 0,
-      out2_Hz => natural(  6.0e6),                  out2_tol_hz => 10000,
-      out3_Hz => natural(  6.0e6),                  out3_tol_hz => 10000
+      out1_Hz => natural(112.5e6), out1_deg => 110, out1_tol_hz => 0,
+      out2_Hz => natural(  6.0e6),                  out2_tol_hz => 0,
+      out3_Hz => natural(  6.0e6),                  out3_tol_hz => 0
   )
   port map
   (
