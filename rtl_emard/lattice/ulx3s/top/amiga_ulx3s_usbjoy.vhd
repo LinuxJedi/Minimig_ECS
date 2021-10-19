@@ -179,7 +179,7 @@ architecture struct of amiga_ulx3s is
   signal clk_dvin : std_logic := '0'; 
  
   signal temp_we : std_logic := '0';
-  signal diskoff : std_logic;
+  signal ndiskled : std_logic;
 	
   signal pwm_accumulator : std_logic_vector(8 downto 0);
 	
@@ -340,7 +340,7 @@ begin
   (
         in_Hz => natural( 25.0e6    ),
       out0_Hz => natural(140.625e6  ),                  out0_tol_hz => 0,
-      out1_Hz => natural(112.5e6    ), out1_deg =>   0, out1_tol_hz => 0,
+      out1_Hz => natural(112.5e6    ), out1_deg =>  90, out1_tol_hz => 0,
       out2_Hz => natural( 28.125e6  ), out2_deg =>   0, out2_tol_hz => 0,
       out3_Hz => natural(  7.03125e6), out3_deg =>   0, out3_tol_hz => 0
   )
@@ -351,7 +351,7 @@ begin
     locked  => pll_locked
   );
   clk_dvi <= clocks_a(0);
-  clk     <= clocks_a(1);
+  --clk     <= clocks_a(1);
   clk28m  <= clocks_a(2);
   clk7m   <= clocks_a(3);
 
@@ -361,17 +361,18 @@ begin
   (
         in_Hz => natural( 25.0e6),
       out0_Hz => natural(112.5e6),                  out0_tol_hz => 0,
-      out1_Hz => natural(112.5e6), out1_deg => 120, out1_tol_hz => 0,
-      out2_Hz => natural(  6.0e6),                  out2_tol_hz => 0,
-      out3_Hz => natural(  6.0e6),                  out3_tol_hz => 0
+      out1_Hz => natural(112.5e6), out1_deg =>  90, out1_tol_hz => 0,
+      out2_Hz => natural(  6.0e6), out2_deg =>   0, out2_tol_hz => 0,
+      out3_Hz => natural(  6.0e6), out3_deg =>   0, out3_tol_hz => 0
   )
   port map
   (
     clk_i   => sys_clock,
     clk_o   => clocks_b
   );
+  clk       <= clocks_b(0);
   sdram_clk <= clocks_b(1);
-  clk_usb   <= clocks_b(3);
+  clk_usb   <= clocks_b(2);
   end generate;
 
   G_clk_usb_high: if C_usb_speed = '1' generate
@@ -416,7 +417,7 @@ begin
     reset_out => reset_n
   );		
 		
-  led(7) <= not diskoff;
+  led(7) <= not ndiskled;
 
   myFampiga: entity work.Fampiga
   port map
@@ -426,7 +427,7 @@ begin
     clk28m  => clk28m,
     reset_n => reset_n,--GPIO_wordin(0),--reset_n,
     --powerled_out=>power_led(5 downto 4),
-    diskled_out=>diskoff,
+    diskled_out=>ndiskled,
     --oddled_out=>odd_led(5), 
 
     -- SDRAM.  A separate shifted clock is provided by the toplevel
@@ -470,12 +471,16 @@ begin
     n_joy2 => n_joy2,		
 		
     -- RS232
-    rs232_rxd => slave_rx_i,
-    rs232_txd => slave_tx_o,
-		
+    --rs232_rxd => slave_rx_i,
+    --rs232_txd => slave_tx_o,
+    rs232_rxd => '1',
+    rs232_txd => open,
+
     -- ESP32 wifi modem
-    amiga_rs232_rxd => wifi_txd,
-    amiga_rs232_txd => wifi_rxd,
+    --amiga_rs232_rxd => wifi_txd,
+    --amiga_rs232_txd => wifi_rxd,
+    amiga_rs232_rxd => '1',
+    amiga_rs232_txd => open,
 		
     -- SD card interface
     sd_cs => mmc_n_cs,
