@@ -219,11 +219,11 @@ $(BOARD)_$(FPGA_SIZE)f_$(PROJECT)_flash_$(FLASH_CHIP).vme: $(BOARD)_$(FPGA_SIZE)
 #	LD_LIBRARY_PATH=$(LIBTRELLIS) $(ECPPACK) $(IDCODE_CHIPID) --db $(TRELLISDB) $< --freq 62.0 --svf-rowsize 8000 --svf $@
 
 # program SRAM  with ujrprog (temporary)
-program: $(BOARD)_$(FPGA_SIZE)f_$(PROJECT).bit
+prog: $(BOARD)_$(FPGA_SIZE)f_$(PROJECT).bit
 	$(UJPROG) $<
 
 # program SRAM with FleaFPGA-JTAG (temporary)
-program_flea: $(BOARD)_$(FPGA_SIZE)f_$(PROJECT).vme
+prog_flea: $(BOARD)_$(FPGA_SIZE)f_$(PROJECT).vme
 	$(FLEAFPGA_JTAG) $<
 
 # program FLASH over US1 port with ujprog (permanently)
