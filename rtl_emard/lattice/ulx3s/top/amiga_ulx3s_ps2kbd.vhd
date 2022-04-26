@@ -391,8 +391,8 @@ begin
         in_Hz => natural( 25.0e6),
       out0_Hz => natural(112.5e6),                  out0_tol_hz => 0,
       out1_Hz => natural(112.5e6), out1_deg => 120, out1_tol_hz => 0,
-      out2_Hz => natural(112.5e6),                  out2_tol_hz => 0,
-      out3_Hz => natural(112.5e6),                  out3_tol_hz => 0
+      out2_Hz => natural(  6.0e6),                  out2_tol_hz => 0,
+      out3_Hz => natural(  6.0e6),                  out3_tol_hz => 0
   )
   port map
   (
@@ -400,6 +400,7 @@ begin
     clk_o   => clocks_b
   );
   sdram_clk <= clocks_b(1);
+  clk_usb   <= clocks_b(2);
 
   reset_combo1 <= sys_reset and pll_locked;
 
