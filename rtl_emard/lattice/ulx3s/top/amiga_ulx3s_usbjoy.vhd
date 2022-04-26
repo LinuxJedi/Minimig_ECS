@@ -295,8 +295,8 @@ begin
   begin
     if rising_edge(clk_usb) then
       -- Joystick1 port used as mouse (right stick)
-      n_joy1(5) <= not (          S_report_decoded.btn_rmouse_right);  -- fire2
-      n_joy1(4) <= not (btn(1) or S_report_decoded.btn_rmouse_left); -- fire
+      n_joy1(5) <= not (S_report_decoded.btn_rmouse_right);  -- fire2
+      n_joy1(4) <= not (S_report_decoded.btn_rmouse_left); -- fire
       n_joy1(3) <= not (S_report_decoded.rmouseq_y(0));       -- LSB quadrature y
       n_joy1(2) <= not (S_report_decoded.rmouseq_x(0));       -- LSB quadrature x
       n_joy1(1) <= not (S_report_decoded.rmouseq_y(1));       -- MSB quadrature y
@@ -306,20 +306,20 @@ begin
       -- Joystick2 bits(5-0) = fire2,fire,right,left,down,up mapped to GPIO header
       -- inverted logic: joystick switches pull down when pressed
       n_joy2(5) <= not (          S_report_decoded.btn_rbumper);  -- fire2
-      n_joy2(4) <= not (btn(2) or S_report_decoded.btn_rtrigger or S_report_decoded.btn_back); -- fire
-      n_joy2(3) <= not (btn(3) or S_report_decoded.btn_y or S_report_decoded.lstick_up   );     -- up
-      n_joy2(2) <= not (btn(4) or S_report_decoded.btn_a or S_report_decoded.lstick_down );   -- down
-      n_joy2(1) <= not (btn(5) or S_report_decoded.btn_x or S_report_decoded.lstick_left );   -- left
-      n_joy2(0) <= not (btn(6) or S_report_decoded.btn_b or S_report_decoded.lstick_right);  -- right
+      n_joy2(4) <= not (btn(2)); -- fire
+      n_joy2(3) <= not (btn(3));     -- up
+      n_joy2(2) <= not (btn(4));   -- down
+      n_joy2(1) <= not (btn(5));   -- left
+      n_joy2(0) <= not (btn(6));  -- right
     end if;
   end process;
 
-  led(0) <= not n_joy2(0); -- red
-  led(3) <= not n_joy2(1); -- blue
-  led(2) <= not n_joy2(2); -- green
-  led(1) <= not n_joy2(3); -- orange
-  led(4) <= not n_joy2(4); -- red
-  led(5) <= not n_joy2(5); -- orange
+  led(0) <= not n_joy1(4); -- red
+--  led(3) <= not n_joy2(4); -- blue
+--  led(2) <= not n_joy2(0); -- green
+--  led(1) <= not n_joy2(1); -- orange
+--  led(4) <= not n_joy2(2); -- red
+--  led(5) <= not n_joy2(3); -- orange
 
   -- Video output horizontal scanrate select 15/30kHz select
   n_15khz <= '1'; -- sw(0) ; -- Default is '1' for 30kHz video out. set to '0' for 15kHz video.
@@ -339,10 +339,10 @@ begin
   generic map
   (
         in_Hz => natural( 25.0e6    ),
-      out0_Hz => natural(140.625e6  ),                  out0_tol_hz => 0,
-      out1_Hz => natural(112.5e6    ), out1_deg =>  90, out1_tol_hz => 0,
-      out2_Hz => natural( 28.125e6  ), out2_deg =>   0, out2_tol_hz => 0,
-      out3_Hz => natural(  7.03125e6), out3_deg =>   0, out3_tol_hz => 0
+      out0_Hz => natural(112.5e6  ),                  out0_tol_hz => 0,
+      out1_Hz => natural(112.5e6    ), out1_deg =>  240, out1_tol_hz => 0,
+      out2_Hz => natural( 28.125e6  ), out2_deg =>  240, out2_tol_hz => 0,
+      out3_Hz => natural(  7.03125e6), out3_deg =>  240, out3_tol_hz => 0
   )
   port map
   (
@@ -350,8 +350,8 @@ begin
     clk_o   => clocks_a,
     locked  => pll_locked
   );
-  clk_dvi <= clocks_a(0);
-  --clk     <= clocks_a(1);
+  sdram_clk <= clocks_a(0);
+  clk     <= clocks_a(1);
   clk28m  <= clocks_a(2);
   clk7m   <= clocks_a(3);
 
@@ -360,19 +360,35 @@ begin
   generic map
   (
         in_Hz => natural( 25.0e6),
-      out0_Hz => natural(112.5e6),                  out0_tol_hz => 0,
-      out1_Hz => natural(112.5e6), out1_deg =>  90, out1_tol_hz => 0,
-      out2_Hz => natural(  6.0e6), out2_deg =>   0, out2_tol_hz => 0,
-      out3_Hz => natural(  6.0e6), out3_deg =>   0, out3_tol_hz => 0
+      out0_Hz => natural(140.625e6),                  out0_tol_hz => 0,
+      out1_Hz => natural(140.625e6), out1_deg => 240, out1_tol_hz => 0,
+      out2_Hz => natural(112.5e6), out2_deg =>   0, out2_tol_hz => 0,
+      out3_Hz => natural(112.5e6), out3_deg =>   0, out3_tol_hz => 0
   )
   port map
   (
     clk_i   => sys_clock,
     clk_o   => clocks_b
   );
-  clk       <= clocks_b(0);
-  sdram_clk <= clocks_b(1);
-  clk_usb   <= clocks_b(2);
+    clk_dvi <= clocks_b(1);
+--  clk       <= clocks_b(0);
+
+  clk2 : entity work.ecp5pll
+  generic map
+  (
+        in_Hz => natural( 25.0e6),
+      out0_Hz => natural( 240.0e6),                  out0_tol_hz => 0,
+      out1_Hz => natural( 48.0e6), out1_deg =>  0, out1_tol_hz => 0,
+      out2_Hz => natural(  6.0e6), out2_deg =>   240, out2_tol_hz => 0,
+      out3_Hz => natural(  6.0e6), out3_deg =>   0, out3_tol_hz => 0
+  )
+  port map
+  (
+    clk_i   => sys_clock,
+    clk_o   => clocks_c
+  );
+  clk_usb   <= clocks_c(2);
+
   end generate;
 
   G_clk_usb_high: if C_usb_speed = '1' generate
@@ -381,7 +397,7 @@ begin
   (
         in_Hz => natural( 25.0e6),
       out0_Hz => natural(112.5e6),                  out0_tol_hz => 0,
-      out1_Hz => natural(112.5e6), out1_deg => 120, out1_tol_hz => 0,
+      out1_Hz => natural(112.5e6), out1_deg => 90, out1_tol_hz => 0,
       out2_Hz => natural(  6.0e6),                  out2_tol_hz => 0,
       out3_Hz => natural(  6.0e6),                  out3_tol_hz => 0
   )
@@ -412,7 +428,7 @@ begin
 		
   u10 : entity work.poweronreset
   port map( 
-    clk => clk,
+    clk => sys_clock,
     reset_button => reset_combo1,
     reset_out => reset_n
   );		
@@ -426,9 +442,9 @@ begin
     clk7m   => clk7m,
     clk28m  => clk28m,
     reset_n => reset_n,--GPIO_wordin(0),--reset_n,
-    --powerled_out=>power_led(5 downto 4),
+    powerled_out=>led(5 downto 4),
     diskled_out=>ndiskled,
-    --oddled_out=>odd_led(5), 
+    oddled_out=>led(6),
 
     -- SDRAM.  A separate shifted clock is provided by the toplevel
     sdr_addr => sdram_a,
@@ -505,8 +521,10 @@ begin
   );
   audio_v(1 downto 0) <= (others => S_spdif_out);
   end generate;
-  audio_l(3 downto 0) <= leftdatasum(14 downto 11);
-  audio_r(3 downto 0) <= rightdatasum(14 downto 11);
+  audio_l(2) <= DAC_L;
+  audio_r(2) <= DAC_R;
+--  audio_l(3 downto 0) <= leftdatasum(14 downto 11);
+--  audio_r(3 downto 0) <= rightdatasum(14 downto 11);
 
   vga2dvi_converter: entity work.vga2dvid
   generic map

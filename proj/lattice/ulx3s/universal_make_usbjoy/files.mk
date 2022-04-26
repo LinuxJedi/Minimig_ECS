@@ -23,7 +23,7 @@ VHDL_FILES = $(TOP_MODULE_FILE) \
 ../../../../rtl_emard/vga/hdmi/vga2dvid.vhd \
 ../../../../rtl_emard/vga/hdmi/tmds_encoder.vhd \
 ../../../../rtl_emard/vga/lattice/ecp5u/ddr_out_emard.vhd \
-../../../../rtl_emard/usb/usbhid/usbhid_report_decoder_saitek_joystick.vhd \
+../../../../rtl_emard/usb/usbhid/usbhid_report_decoder_logitech_mouse.vhd \
 ../../../../rtl_emard/usb/usbhid/report_decoded_pack_generic.vhd \
 ../../../../rtl_emard/usb/usbhost/usbh_setup_pack.vhd \
 ../../../../rtl_emard/usb/usbhost/usbh_host_hid.vhd \
